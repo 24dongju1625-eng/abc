@@ -3,101 +3,115 @@ import streamlit as st
 from datetime import datetime, date, timedelta
 from zoneinfo import ZoneInfo
 
-# ---------- 기본 설정 ----------
-st.set_page_config(page_title="날짜 알려주는 앱", page_icon="📅", layout="wide")
+st.set_page_config(page_title="리락쿠마 날짜 페이지", page_icon="🧸", layout="centered")
 
-WEEKDAY_KOR = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]
+WEEKDAY_KOR = ["월요일","화요일","수요일","목요일","금요일","토요일","일요일"]
 
-# ---------- 스타일(디자인 업그레이드) ----------
-st.markdown(
-    """
-    <style>
-        /* 전체 배경 */
-        .main {
-            background: #f8f9fc;
-        }
+# ------- 스타일 (귀여운 테마) -------
+st.markdown("""
+<style>
 
-        /* 카드 스타일 */
-        .card {
-            background: white;
-            padding: 25px 30px;
-            border-radius: 15px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.08);
-            margin-bottom: 25px;
-        }
+    /* 전체 폰트 & 배경 */
+    .main {
+        background: #FFF6E9; /* 따뜻한 베이지톤 */
+    }
 
-        /* 제목 스타일 */
-        .title {
-            text-align: center;
-            font-size: 40px;
-            font-weight: 800;
-            color: #2b4eff;
-            margin-bottom: 5px;
-        }
+    /* 카드 */
+    .card {
+        background: #FFFFFFEE;
+        padding: 25px 30px;
+        border-radius: 20px;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+        margin-bottom: 25px;
+        border: 2px solid #FFD8A8;
+    }
 
-        .subtitle {
-            text-align: center;
-            font-size: 18px;
-            color: #555;
-            margin-bottom: 25px;
-        }
+    /* 제목 */
+    .title {
+        text-align: center;
+        font-size: 38px;
+        font-weight: 900;
+        color: #D87E4A;
+        margin-top: -10px;
+    }
 
-        /* 구분선 스타일 */
-        hr {
-            border: 0;
-            height: 1px;
-            background: #d0d7e6;
-            margin: 20px 0;
-        }
+    /* 부제 */
+    .subtitle {
+        text-align: center;
+        font-size: 18px;
+        color: #8B5A2B;
+        margin-bottom: 20px;
+    }
 
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+    /* 리락쿠마 이미지 꾸미기 */
+    .rilakkuma-img {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 180px;
+        border-radius: 20px;
+        border: 3px solid #FFC48E;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
 
-# ---------- 유틸 ----------
-def now_in_tz(tz_name: str) -> datetime:
-    tz = ZoneInfo(tz_name)
-    return datetime.now(tz)
+</style>
+""", unsafe_allow_html=True)
 
-def format_korean(dt: datetime) -> str:
+
+# ------- 리락쿠마 이미지 업로드 -------
+st.markdown("### 🧸 리락쿠마 이미지 업로드")
+uploaded = st.file_uploader("리락쿠마 이미지를 업로드하세요 (png, jpg)", type=["png", "jpg"])
+
+if uploaded:
+    st.image(uploaded, caption="귀여운 리락쿠마 🧸", use_column_width=False)
+else:
+    st.info("리락쿠마 이미지를 올리면 상단에 예쁘게 표시돼요!")
+
+
+# ------- 제목 -------
+st.markdown("<h1 class='title'>🧸 날짜 알려주는 리락쿠마 페이지</h1>", unsafe_allow_html=True)
+st.markdown("<p class='subtitle'>귀여운 리락쿠마와 함께 날짜를 확인해요!</p>", unsafe_allow_html=True)
+
+
+# ------- 유틸 -------
+def now_in_tz(tz):
+    tzinfo = ZoneInfo(tz)
+    return datetime.now(tzinfo)
+
+def fmt_datetime(dt):
     wk = WEEKDAY_KOR[dt.weekday()]
-    return f"{dt.year}년 {dt.month}월 {dt.day}일 ({wk}) {dt.hour:02d}:{dt.minute:02d}:{dt.second:02d}"
+    return f"{dt.year}년 {dt.month}월 {dt.day}일 ({wk})  {dt.hour:02d}:{dt.minute:02d}:{dt.second:02d}"
 
-def format_date_korean(d: date) -> str:
+def fmt_date(d):
     wk = WEEKDAY_KOR[d.weekday()]
     return f"{d.year}년 {d.month}월 {d.day}일 ({wk})"
 
-def diff_days(from_date: date, to_date: date) -> int:
-    return (to_date - from_date).days
+def diff(a,b):
+    return (b - a).days
 
 
-# ---------- UI ----------
-st.markdown("<h1 class='title'>📅 날짜 알려주는 페이지</h1>", unsafe_allow_html=True)
-st.markdown("<p class='subtitle'>날짜, 요일, D-Day를 깔끔하게 확인하세요!</p>", unsafe_allow_html=True)
-
-# 사이드바
+# ------- 사이드바 -------
 st.sidebar.header("⚙️ 설정")
-tz_choice = st.sidebar.selectbox("시간대 선택", [
-    "Asia/Seoul", "UTC", "Asia/Tokyo", "Europe/London", "America/New_York"
-], index=0)
+tz = st.sidebar.selectbox("시간대 선택", ["Asia/Seoul","UTC","Asia/Tokyo","Europe/London"], index=0)
 
-now = now_in_tz(tz_choice)
+now = now_in_tz(tz)
 
-# -------------------- 카드 1: 현재 시간 --------------------
+
+# ---------------- 카드 1 ----------------
 st.markdown("<div class='card'>", unsafe_allow_html=True)
 st.subheader("⏰ 현재 시간")
-st.write(f"**{format_korean(now)}**")
-st.caption(f"ISO 형식: `{now.isoformat()}`  •  Timezone: `{tz_choice}`")
+st.write(f"**{fmt_datetime(now)}**")
+st.caption(f"ISO: {now.isoformat()}  | timezone: {tz}")
 st.markdown("</div>", unsafe_allow_html=True)
 
-# -------------------- 카드 2: 날짜 선택 --------------------
-st.markdown("<div class='card'>", unsafe_allow_html=True)
-st.subheader("📌 날짜 선택")
 
-col1, col2 = st.columns([2, 1])
+# ---------------- 카드 2 ----------------
+st.markdown("<div class='card'>", unsafe_allow_html=True)
+st.subheader("📅 날짜 선택")
+
+col1, col2 = st.columns([2,1])
 with col1:
-    selected = st.date_input("날짜를 선택하세요", value=now.date())
+    selected = st.date_input("날짜 선택", now.date())
 with col2:
     if st.button("오늘"):
         selected = now.date()
@@ -106,56 +120,35 @@ with col2:
     if st.button("어제"):
         selected = now.date() - timedelta(days=1)
 
-st.write(f"**▶ 선택한 날짜:** {format_date_korean(selected)}")
-st.write(f"ISO 형식: `{selected.isoformat()}`")
-
+st.write(f"선택한 날짜: **{fmt_date(selected)}**")
 st.markdown("</div>", unsafe_allow_html=True)
 
-# -------------------- 카드 3: D-Day 계산 --------------------
+
+# ---------------- 카드 3 ----------------
 st.markdown("<div class='card'>", unsafe_allow_html=True)
-st.subheader("📅 D-Day 계산")
+st.subheader("📌 D-Day 계산")
 
-days_until = diff_days(now.date(), selected)
+d = diff(now.date(), selected)
 
-if days_until == 0:
-    st.success("오늘입니다! 🎉")
-elif days_until > 0:
-    st.info(f"⏳ **{days_until}일 남았습니다.**")
+if d == 0:
+    st.success("🎉 오늘이에요!!")
+elif d > 0:
+    st.info(f"⏳ {d}일 남았어요!")
 else:
-    st.warning(f"📌 **{abs(days_until)}일 전** 날짜입니다.")
+    st.warning(f"📌 {abs(d)}일 지났어요!")
 
 st.markdown("</div>", unsafe_allow_html=True)
 
-# -------------------- 카드 4: 기간 계산 --------------------
+
+# ---------------- 카드 4 ----------------
 st.markdown("<div class='card'>", unsafe_allow_html=True)
-st.subheader("🗓️ 기간 계산")
+st.subheader("📘 기간 계산")
 
-start = st.date_input("시작일", value=now.date() - timedelta(days=7), key="start")
-end = st.date_input("종료일", value=now.date(), key="end")
+s1 = st.date_input("시작일", now.date() - timedelta(days=7), key="s1")
+s2 = st.date_input("종료일", now.date(), key="s2")
 
-if end < start:
-    st.error("🚫 종료일은 시작일 이후여야 합니다.")
+if s2 < s1:
+    st.error("🚫 종료일은 시작일보다 이후여야 해요")
 else:
-    length = diff_days(start, end) + 1
-    st.write(f"📘 **총 {length}일**")
-    st.caption(f"{start.isoformat()} → {end.isoformat()}")
-
-st.markdown("</div>", unsafe_allow_html=True)
-
-# -------------------- 카드 5: 다운로드 --------------------
-st.markdown("<div class='card'>", unsafe_allow_html=True)
-st.subheader("📥 날짜 정보 다운로드")
-
-download_text = (
-    f"현재시간: {now.isoformat()} ({tz_choice})\n"
-    f"선택날짜: {selected.isoformat()} ({format_date_korean(selected)})\n"
-    f"D-day: {days_until}\n"
-)
-
-st.download_button(
-    "다운로드 (TXT)",
-    data=download_text,
-    file_name="date_info.txt",
-    mime="text/plain"
-)
+    st.write(f"총 **{diff(s1,s2)+1}일**")
 st.markdown("</div>", unsafe_allow_html=True)

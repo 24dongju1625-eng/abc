@@ -186,4 +186,15 @@ st.markdown("<div class='card'>", unsafe_allow_html=True)
 st.subheader("📥 날짜 정보 다운로드")
 
 download_text = (
-    f"현재시간: {fmt_datetime(now)_
+    f"현재시간: {fmt_datetime(now)}\n"
+    f"선택한 날짜: {fmt_date(selected)}\n"
+    f"D-day: {diff}\n"
+)
+
+st.download_button(
+    "TXT 다운로드",
+    data=download_text,
+    file_name="date_info.txt",
+    mime="text/plain"
+)
+st.markdown("</div>", unsafe_allow_html=True)

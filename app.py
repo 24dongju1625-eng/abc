@@ -7,40 +7,66 @@ st.set_page_config(page_title="날짜 알려주기", page_icon="📅", layout="c
 
 # -------------------- 감성 배경 테마 -------------------------
 BACKGROUND_STYLES = {
-    "🌸 핑크 하트 ( : ̗̀ ♡ˎˊ: )": """
-        background: linear-gradient(180deg, #FFE5EF, #FFD3E6);
-        background-image: radial-gradient(#FFAAC9 1px, transparent 1px),
-                          radial-gradient(#FFC8DE 1px, transparent 1px);
-        background-size: 18px 18px;
-        background-position: 0 0, 9px 9px;
-    """,
+    "🌸 핑크 하트 ( : ̗̀ ♡ˎˊ: )": {
+        "bg": """
+            background: linear-gradient(180deg, #FFE5EF, #FFD3E6);
+            background-image: radial-gradient(#FFAAC9 1px, transparent 1px),
+                              radial-gradient(#FFC8DE 1px, transparent 1px);
+            background-size: 18px 18px;
+            background-position: 0 0, 9px 9px;
+        """,
+        "button_bg": "#FF8AC7",
+        "button_text": "#FFFFFF",
+        "card_bg": "#FFFFFFDD",
+        "card_border": "#FFB3D6",
+        "title_color": "#FF4FA0",
+        "text_color": "#FF4FA0"
+    },
 
-    "✨ 보랏빛 별빛 (✧ ⋆｡°)": """
-        background: linear-gradient(180deg, #F8F3FF, #EDE4FF);
-        background-image: radial-gradient(#D6C6FF 1px, transparent 1px),
-                          radial-gradient(#E8DDFF 1px, transparent 1px);
-        background-size: 22px 22px;
-        background-position: 0 0, 11px 11px;
-    """,
+    "✨ 보랏빛 별빛 (✧ ⋆｡°)": {
+        "bg": """
+            background: linear-gradient(180deg, #F8F3FF, #EDE4FF);
+            background-image: radial-gradient(#D6C6FF 1px, transparent 1px),
+                              radial-gradient(#E8DDFF 1px, transparent 1px);
+            background-size: 22px 22px;
+            background-position: 0 0, 11px 11px;
+        """,
+        "button_bg": "#D9A6FF",
+        "button_text": "#FFFFFF",
+        "card_bg": "#FFFFFFDD",
+        "card_border": "#D1A9FF",
+        "title_color": "#A573D7",
+        "text_color": "#A573D7"
+    },
 
-    "🩵 하늘 파스텔 (₊˚⊹♡)": """
-        background: linear-gradient(180deg, #EAF7FF, #D8EFFF);
-        background-image: radial-gradient(#BFE8FF 1px, transparent 1px),
-                          radial-gradient(#D2F1FF 1px, transparent 1px);
-        background-size: 20px 20px;
-        background-position: 0 0, 10px 10px;
-    """
+    "🩵 하늘 파스텔 (₊˚⊹♡)": {
+        "bg": """
+            background: linear-gradient(180deg, #EAF7FF, #D8EFFF);
+            background-image: radial-gradient(#BFE8FF 1px, transparent 1px),
+                              radial-gradient(#D2F1FF 1px, transparent 1px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+        """,
+        "button_bg": "#7EC8FF",
+        "button_text": "#FFFFFF",
+        "card_bg": "#FFFFFFEE",
+        "card_border": "#A1D5FF",
+        "title_color": "#6EC9F1",
+        "text_color": "#6EC9F1"
+    }
 }
 
 # -------------------- 사이드바 -------------------------
 st.sidebar.header("🎀 배경 테마")
 selected_bg = st.sidebar.selectbox("테마 선택", list(BACKGROUND_STYLES.keys()))
 
-# -------------------- CSS 적용 (body 전체 적용) -------------------------
+# -------------------- CSS 적용 (배경 + UI 색상 전체 적용) -------------------------
+style = BACKGROUND_STYLES[selected_bg]
+
 st.markdown(f"""
 <style>
     html, body, .main, .stApp, .appview-container {{
-        {BACKGROUND_STYLES[selected_bg]}
+        {style['bg']}
         background-attachment: fixed;
     }}
 
@@ -48,27 +74,31 @@ st.markdown(f"""
         text-align: center;
         font-size: 38px;
         font-weight: 900;
-        color: #FF4FA0;
+        color: {style['title_color']};
         margin-top: 5px;
         text-shadow: 0 3px 6px rgba(255, 0, 120, 0.2);
     }}
 
     .card {{
-        background: #FFFFFFEE;
+        background: {style['card_bg']};
         padding: 20px;
         border-radius: 18px;
         box-shadow: 0 6px 14px rgba(255, 140, 180, 0.25);
-        border: 2px solid #FFA9D6;
+        border: 2px solid {style['card_border']};
         margin-bottom: 20px;
     }}
 
     .stButton>button {{
-        background-color: #FF8AC7 !important;
-        color: white !important;
+        background-color: {style['button_bg']} !important;
+        color: {style['button_text']} !important;
         font-weight: 600 !important;
         border-radius: 10px !important;
         border: none !important;
         padding: 8px 14px !important;
+    }}
+
+    .stMarkdown {{
+        color: {style['text_color']} !important;
     }}
 </style>
 """, unsafe_allow_html=True)
@@ -156,15 +186,4 @@ st.markdown("<div class='card'>", unsafe_allow_html=True)
 st.subheader("📥 날짜 정보 다운로드")
 
 download_text = (
-    f"현재시간: {fmt_datetime(now)}\n"
-    f"선택한 날짜: {fmt_date(selected)}\n"
-    f"D-day: {diff}\n"
-)
-
-st.download_button(
-    "TXT 다운로드",
-    data=download_text,
-    file_name="date_info.txt",
-    mime="text/plain"
-)
-st.markdown("</div>", unsafe_allow_html=True)
+    f"현재시간: {fmt_datetime(now)_

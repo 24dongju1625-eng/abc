@@ -3,11 +3,11 @@ import streamlit as st
 from datetime import datetime, date, timedelta
 from zoneinfo import ZoneInfo
 
-st.set_page_config(page_title="감성 날짜 페이지", page_icon="♡", layout="centered")
+st.set_page_config(page_title="날짜 알려주기", page_icon="📅", layout="centered")
 
-# --- 귀여운 카오모지 배경 프리셋 ---
+# -------------------- 감성 배경 테마 -------------------------
 BACKGROUND_STYLES = {
-    "🌸 핑크 하트 패턴 ( : ̗̀ ♡ˎˊ: )": """
+    "🌸 핑크 하트 ( : ̗̀ ♡ˎˊ: )": """
         background: linear-gradient(180deg, #FFE5EF, #FFD3E6);
         background-image: radial-gradient(#FFAAC9 1px, transparent 1px),
                           radial-gradient(#FFC8DE 1px, transparent 1px);
@@ -15,50 +15,50 @@ BACKGROUND_STYLES = {
         background-position: 0 0, 9px 9px;
     """,
 
-    "✨ 은은한 별빛 패턴 (✧ ⋆｡°)": """
-        background: linear-gradient(180deg, #FAF6FF, #F3EDFF);
-        background-image: radial-gradient(#D5C2FF 1px, transparent 1px),
-                          radial-gradient(#E6D9FF 1px, transparent 1px);
+    "✨ 보랏빛 별빛 (✧ ⋆｡°)": """
+        background: linear-gradient(180deg, #F8F3FF, #EDE4FF);
+        background-image: radial-gradient(#D6C6FF 1px, transparent 1px),
+                          radial-gradient(#E8DDFF 1px, transparent 1px);
         background-size: 22px 22px;
         background-position: 0 0, 11px 11px;
     """,
 
-    "🩵 하늘색 포근 패턴 (₊˚⊹♡)": """
-        background: linear-gradient(180deg, #E9F6FF, #D9EEFF);
-        background-image: radial-gradient(#AEE1FF 1px, transparent 1px),
-                          radial-gradient(#BEEAFF 1px, transparent 1px);
+    "🩵 하늘 파스텔 (₊˚⊹♡)": """
+        background: linear-gradient(180deg, #EAF7FF, #D8EFFF);
+        background-image: radial-gradient(#BFE8FF 1px, transparent 1px),
+                          radial-gradient(#D2F1FF 1px, transparent 1px);
         background-size: 20px 20px;
         background-position: 0 0, 10px 10px;
     """
 }
 
-# --- 사용자 선택 ---
-st.sidebar.header("🎀 배경 스타일 선택")
-selected_bg = st.sidebar.selectbox("배경 테마", list(BACKGROUND_STYLES.keys()))
+# -------------------- 사이드바 -------------------------
+st.sidebar.header("🎀 배경 테마")
+selected_bg = st.sidebar.selectbox("테마 선택", list(BACKGROUND_STYLES.keys()))
 
-# --- 스타일 적용 ---
+# -------------------- CSS 적용 (body 전체 적용) -------------------------
 st.markdown(f"""
 <style>
-    .main {{
+    html, body, .main, .stApp, .appview-container {{
         {BACKGROUND_STYLES[selected_bg]}
         background-attachment: fixed;
     }}
 
     .title {{
         text-align: center;
-        font-size: 42px;
+        font-size: 38px;
         font-weight: 900;
         color: #FF4FA0;
-        text-shadow: 0 3px 6px rgba(255,0,120,0.15);
-        margin-top: 10px;
+        margin-top: 5px;
+        text-shadow: 0 3px 6px rgba(255, 0, 120, 0.2);
     }}
 
     .card {{
-        background: #FFFFFFDD;
-        padding: 22px;
-        border-radius: 20px;
-        box-shadow: 0 8px 16px rgba(255, 150, 190, 0.2);
-        border: 2px solid #FFB3D6;
+        background: #FFFFFFEE;
+        padding: 20px;
+        border-radius: 18px;
+        box-shadow: 0 6px 14px rgba(255, 140, 180, 0.25);
+        border: 2px solid #FFA9D6;
         margin-bottom: 20px;
     }}
 
@@ -73,8 +73,7 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
-
-# --- 날짜 기능 ---
+# -------------------- 날짜 함수들 -------------------------
 WEEKDAY_KOR = ["월요일","화요일","수요일","목요일","금요일","토요일","일요일"]
 
 def now_in_tz(tz):
@@ -88,23 +87,26 @@ def fmt_date(d):
     wk = WEEKDAY_KOR[d.weekday()]
     return f"{d.year}년 {d.month}월 {d.day}일 ({wk})"
 
+def day_diff(from_d, to_d):
+    return (to_d - from_d).days
 
-# --- 메인 UI ---
-st.markdown("<h1 class='title'>: ̗̀ ♡ˎˊ:  감성 날짜 페이지  : ̗̀ ♡ˎˊ:</h1>", unsafe_allow_html=True)
+# -------------------- 제목 -------------------------
+st.markdown("<h1 class='title'>날짜 알려주기</h1>", unsafe_allow_html=True)
 
 now = now_in_tz("Asia/Seoul")
 
-# 카드 1 — 현재 시간
+# -------------------- 현재 시간 -------------------------
 st.markdown("<div class='card'>", unsafe_allow_html=True)
 st.subheader("⏰ 현재 시간")
 st.write(f"**{fmt_datetime(now)}**")
+st.write(f"ISO: `{now.isoformat()}`")
 st.markdown("</div>", unsafe_allow_html=True)
 
-# 카드 2 — 날짜 선택
+# -------------------- 날짜 선택 -------------------------
 st.markdown("<div class='card'>", unsafe_allow_html=True)
 st.subheader("📅 날짜 선택")
 
-selected = st.date_input("날짜를 선택하세요", now.date())
+selected = st.date_input("날짜 선택", now.date())
 
 col1, col2, col3 = st.columns(3)
 with col1:
@@ -117,5 +119,52 @@ with col3:
     if st.button("어제"):
         selected = now.date() - timedelta(days=1)
 
-st.write(f"선택된 날짜: **{fmt_date(selected)}**")
+st.write(f"선택한 날짜: **{fmt_date(selected)}**")
+st.markdown("</div>", unsafe_allow_html=True)
+
+# -------------------- D-day -------------------------
+st.markdown("<div class='card'>", unsafe_allow_html=True)
+st.subheader("📌 D-Day 계산")
+
+diff = day_diff(now.date(), selected)
+
+if diff == 0:
+    st.success("오늘입니다! ✿")
+elif diff > 0:
+    st.info(f"⏳ **{diff}일 남음**")
+else:
+    st.warning(f"📍 **{abs(diff)}일 지남**")
+
+st.markdown("</div>", unsafe_allow_html=True)
+
+# -------------------- 구간 계산 -------------------------
+st.markdown("<div class='card'>", unsafe_allow_html=True)
+st.subheader("🗓 기간 계산")
+
+start = st.date_input("시작일", now.date() - timedelta(days=7))
+end = st.date_input("종료일", now.date())
+
+if end < start:
+    st.error("❌ 종료일이 시작일보다 더 빠릅니다!")
+else:
+    length = (end - start).days + 1
+    st.write(f"총 기간: **{length}일**")
+st.markdown("</div>", unsafe_allow_html=True)
+
+# -------------------- 다운로드 -------------------------
+st.markdown("<div class='card'>", unsafe_allow_html=True)
+st.subheader("📥 날짜 정보 다운로드")
+
+download_text = (
+    f"현재시간: {fmt_datetime(now)}\n"
+    f"선택한 날짜: {fmt_date(selected)}\n"
+    f"D-day: {diff}\n"
+)
+
+st.download_button(
+    "TXT 다운로드",
+    data=download_text,
+    file_name="date_info.txt",
+    mime="text/plain"
+)
 st.markdown("</div>", unsafe_allow_html=True)

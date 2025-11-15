@@ -3,80 +3,92 @@ import streamlit as st
 from datetime import datetime, date, timedelta
 from zoneinfo import ZoneInfo
 
-st.set_page_config(page_title="리락쿠마 날짜 페이지", page_icon="🧸", layout="centered")
+st.set_page_config(page_title="헬로키티 날짜 페이지", page_icon="🎀", layout="centered")
 
 WEEKDAY_KOR = ["월요일","화요일","수요일","목요일","금요일","토요일","일요일"]
 
-# ------- 스타일 (귀여운 테마) -------
+# ------- 스타일 (헬로키티 테마) -------
 st.markdown("""
 <style>
 
-    /* 전체 폰트 & 배경 */
+    /* 전체 배경: 핑크 그라데이션 + 하트 느낌 */
     .main {
-        background: #FFF6E9; /* 따뜻한 베이지톤 */
+        background: linear-gradient(180deg, #FFE6F2, #FFD6EB);
+        background-attachment: fixed;
     }
 
-    /* 카드 */
+    /* 카드 디자인 */
     .card {
-        background: #FFFFFFEE;
+        background: #FFFFFFDD;
         padding: 25px 30px;
         border-radius: 20px;
-        box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+        box-shadow: 0 8px 16px rgba(255, 120, 180, 0.25);
         margin-bottom: 25px;
-        border: 2px solid #FFD8A8;
+        border: 2px solid #FF9ECF;
     }
 
     /* 제목 */
     .title {
         text-align: center;
-        font-size: 38px;
+        font-size: 40px;
         font-weight: 900;
-        color: #D87E4A;
+        color: #FF4FA0;
         margin-top: -10px;
+        text-shadow: 0 3px 6px rgba(255,0,120,0.15);
     }
 
     /* 부제 */
     .subtitle {
         text-align: center;
         font-size: 18px;
-        color: #8B5A2B;
+        color: #B94682;
         margin-bottom: 20px;
     }
 
-    /* 리락쿠마 이미지 꾸미기 */
-    .rilakkuma-img {
+    /* 업로드 이미지 꾸미기 */
+    .kitty-img {
         display: block;
         margin-left: auto;
         margin-right: auto;
         width: 180px;
-        border-radius: 20px;
-        border: 3px solid #FFC48E;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        border-radius: 25px;
+        border: 4px solid #FF80BC;
+        box-shadow: 0 4px 12px rgba(255, 80, 150, 0.35);
+    }
+
+    /* 버튼 스타일 */
+    .stButton>button {
+        background-color: #FF8AC7 !important;
+        color: white !important;
+        border-radius: 10px !important;
+        border: 0 !important;
+        padding: 8px 14px !important;
+        font-weight: 600 !important;
+        box-shadow: 0 4px 8px rgba(255,0,120,0.25) !important;
     }
 
 </style>
 """, unsafe_allow_html=True)
 
 
-# ------- 리락쿠마 이미지 업로드 -------
-st.markdown("### 🧸 리락쿠마 이미지 업로드")
-uploaded = st.file_uploader("리락쿠마 이미지를 업로드하세요 (png, jpg)", type=["png", "jpg"])
+# ------- 키티 이미지 업로드 -------
+st.markdown("### 🎀 헬로키티 이미지 업로드")
+uploaded = st.file_uploader("헬로키티 이미지(png, jpg)를 올려주세요", type=["png", "jpg"])
 
 if uploaded:
-    st.image(uploaded, caption="귀여운 리락쿠마 🧸", use_column_width=False)
+    st.image(uploaded, caption="귀여운 헬로키티 🎀", width=200)
 else:
-    st.info("리락쿠마 이미지를 올리면 상단에 예쁘게 표시돼요!")
+    st.info("헬로키티 이미지를 업로드하면 상단에 예쁘게 표시돼요!")
 
 
 # ------- 제목 -------
-st.markdown("<h1 class='title'>🧸 날짜 알려주는 리락쿠마 페이지</h1>", unsafe_allow_html=True)
-st.markdown("<p class='subtitle'>귀여운 리락쿠마와 함께 날짜를 확인해요!</p>", unsafe_allow_html=True)
+st.markdown("<h1 class='title'>🎀 헬로키티 날짜 페이지</h1>", unsafe_allow_html=True)
+st.markdown("<p class='subtitle'>핑크빛 헬로키티와 함께 오늘 날짜를 확인해보세요!</p>", unsafe_allow_html=True)
 
 
 # ------- 유틸 -------
 def now_in_tz(tz):
-    tzinfo = ZoneInfo(tz)
-    return datetime.now(tzinfo)
+    return datetime.now(ZoneInfo(tz))
 
 def fmt_datetime(dt):
     wk = WEEKDAY_KOR[dt.weekday()]
@@ -91,7 +103,7 @@ def diff(a,b):
 
 
 # ------- 사이드바 -------
-st.sidebar.header("⚙️ 설정")
+st.sidebar.header("🎀 설정")
 tz = st.sidebar.selectbox("시간대 선택", ["Asia/Seoul","UTC","Asia/Tokyo","Europe/London"], index=0)
 
 now = now_in_tz(tz)
@@ -126,12 +138,12 @@ st.markdown("</div>", unsafe_allow_html=True)
 
 # ---------------- 카드 3 ----------------
 st.markdown("<div class='card'>", unsafe_allow_html=True)
-st.subheader("📌 D-Day 계산")
+st.subheader("🎀 D-Day 계산")
 
 d = diff(now.date(), selected)
 
 if d == 0:
-    st.success("🎉 오늘이에요!!")
+    st.success("🎉 오늘이에요!! 헬로키티가 축하해요!")
 elif d > 0:
     st.info(f"⏳ {d}일 남았어요!")
 else:

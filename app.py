@@ -2,7 +2,7 @@
 import streamlit as st
 
 st.title("날짜 알려주는 페이지")
-st.write("이것은 가장 쉬!운 스트림릿 예제입니다.")
+st.subheader("현재 날짜와 요일을 알려드립니다!.")
 # app.py
 import streamlit as st
 from datetime import datetime, date, timedelta
